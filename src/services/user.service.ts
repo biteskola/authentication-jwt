@@ -3,13 +3,13 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {UserService} from '@loopback/authentication';
-import {repository} from '@loopback/repository';
-import {HttpErrors} from '@loopback/rest';
-import {securityId, UserProfile} from '@loopback/security';
-import {compare} from 'bcryptjs';
-import {User, UserWithRelations} from '../models';
-import {UserRepository} from '../repositories';
+import { UserService } from '@loopback/authentication';
+import { repository } from '@loopback/repository';
+import { HttpErrors } from '@loopback/rest';
+import { securityId, UserProfile } from '@loopback/security';
+import { compare } from 'bcryptjs';
+import { User, UserWithRelations } from '../models';
+import { UserRepository } from '../repositories';
 
 /**
  * A pre-defined type for user credentials. It assumes a user logs in
@@ -23,13 +23,13 @@ export type Credentials = {
 export class MyUserService implements UserService<User, Credentials> {
   constructor(
     @repository(UserRepository) public userRepository: UserRepository,
-  ) {}
+  ) { }
 
   async verifyCredentials(credentials: Credentials): Promise<User> {
     const invalidCredentialsError = 'Invalid email or password.';
 
     const foundUser = await this.userRepository.findOne({
-      where: {email: credentials.email},
+      where: { email: credentials.email },
     });
     if (!foundUser) {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);
@@ -59,6 +59,7 @@ export class MyUserService implements UserService<User, Credentials> {
       [securityId]: user.id.toString(),
       name: user.username,
       id: user.id,
+      role: user.role,
       email: user.email,
     };
   }
@@ -67,7 +68,7 @@ export class MyUserService implements UserService<User, Credentials> {
   async findUserById(id: string): Promise<User & UserWithRelations> {
     const userNotfound = 'invalid User';
     const foundUser = await this.userRepository.findOne({
-      where: {id: id},
+      where: { id: id },
     });
 
     if (!foundUser) {
